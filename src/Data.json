@@ -1,0 +1,17 @@
+[
+    {
+      "id": 1,
+      "blogText": "This is a blogg posted by a different user.",
+      "author": "John Doe",
+      "title": "Kids ADHD",
+      "category": "Kids ADHD"
+    },
+    {
+      "id": 2,
+      "blogText": "You are not able to edit or delete this blogg",
+      "author": "Susan Smitt",
+      "title": "Adult ADHD",
+      "category": "Adult ADHD"
+    }
+  ]
+  
