@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { UserContext } from "../componenets/UserContext";
 import { MdDeleteOutline, MdEdit } from "react-icons/md";
-import Layout from "../componenets/Layout";
-import { firestore } from "../firebase";
+import Layout from '../componenets/Layout'
 
 const AllBlogs = () => {
   const { userName } = useContext(UserContext);
@@ -10,17 +9,16 @@ const AllBlogs = () => {
   const [editedText, setEditedText] = useState("");
   const [comments, setComments] = useState({});
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [sortBy, setSortBy] = useState("latest");
+  const [sortBy, setSortBy] = useState("newest");
   const [filteredPosts, setFilteredPosts] = useState([]);
   const [blogPosts, setBlogPosts] = useState([]);
 
   useEffect(() => {
-    const fetchBlogPosts = async () => {
-      const snapshot = await firestore.collection("blogPosts").get();
-      const blogs = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setBlogPosts(blogs);
-    };
-    fetchBlogPosts();
+    // Retrieve blog posts from local storage
+    const storedPosts = JSON.parse(localStorage.getItem("blogPosts"));
+    if (storedPosts) {
+      setBlogPosts(storedPosts);
+    }
   }, []);
 
   useEffect(() => {
@@ -29,34 +27,37 @@ const AllBlogs = () => {
       filtered = filtered.filter((post) => post.category === selectedCategory);
     }
     filtered = filtered.sort((a, b) => {
-      if (sortBy === "latest") {
-        return b.timestamp - a.timestamp;
+      if (sortBy === "newest") {
+        return b.id - a.id;
       } else {
-        return a.timestamp - b.timestamp;
+        return a.id - b.id;
       }
     });
 
     setFilteredPosts(filtered);
   }, [blogPosts, selectedCategory, sortBy]);
 
-  const addBlog = async (post) => {
-    const docRef = await firestore.collection("blogPosts").add(post);
-    const newPost = { id: docRef.id, ...post };
-    setBlogPosts((prevPosts) => [...prevPosts, newPost]);
+  const addBlog = (post) => {
+    const updatedPosts = [...blogPosts, post];
+    setBlogPosts(updatedPosts);
+    // Store updated posts in local storage
+    localStorage.setItem("blogPosts", JSON.stringify(updatedPosts));
   };
 
-  const removeBlog = async (postId) => {
-    await firestore.collection("blogPosts").doc(postId).delete();
-    setBlogPosts((prevPosts) => prevPosts.filter((post) => post.id !== postId));
+  const removeBlog = (postId) => {
+    const updatedPosts = blogPosts.filter((post) => post.id !== postId);
+    setBlogPosts(updatedPosts);
+    // Update local storage
+    localStorage.setItem("blogPosts", JSON.stringify(updatedPosts));
   };
 
-  const editBlog = async (postId, newText) => {
-    await firestore.collection("blogPosts").doc(postId).update({ blogText: newText });
-    setBlogPosts((prevPosts) =>
-      prevPosts.map((post) =>
-        post.id === postId ? { ...post, blogText: newText } : post
-      )
+  const editBlog = (postId, newText) => {
+    const updatedPosts = blogPosts.map((post) =>
+      post.id === postId ? { ...post, blogText: newText } : post
     );
+    setBlogPosts(updatedPosts);
+    // Update local storage
+    localStorage.setItem("blogPosts", JSON.stringify(updatedPosts));
   };
 
   const handleEdit = (postId, text) => {
@@ -84,20 +85,18 @@ const AllBlogs = () => {
     }));
   };
 
-  const handleCommentSubmit = async (postId) => {
+  const handleCommentSubmit = (postId) => {
     const commentContent = comments[postId];
     if (commentContent) {
-      const newComment = { userName, text: commentContent, timestamp: new Date() };
-      await firestore.collection("blogPosts").doc(postId).update({
-        comments: firebase.firestore.FieldValue.arrayUnion(newComment),
-      });
-      setBlogPosts((prevPosts) =>
-        prevPosts.map((post) =>
-          post.id === postId
-            ? { ...post, comments: [...(post.comments || []), newComment] }
-            : post
-        )
+      const newComment = { userName, text: commentContent };
+      const updatedPosts = blogPosts.map((post) =>
+        post.id === postId
+          ? { ...post, comments: [...(post.comments || []), newComment] }
+          : post
       );
+      setBlogPosts(updatedPosts);
+      // Update local storage
+      localStorage.setItem("blogPosts", JSON.stringify(updatedPosts));
       setComments((prevComments) => ({
         ...prevComments,
         [postId]: "",
@@ -111,8 +110,8 @@ const AllBlogs = () => {
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-wrap justify-center px-5 py-5 gap-4">
             <button
-            className={`submit-button ${ sortBy === "latest" ? "active" : ""}`}
-              onClick={() => setSortBy("latest")}
+            className={`submit-button ${ sortBy === "oldest" ? "active" : ""}`}
+              onClick={() => setSortBy("newest")}
             >
               Latest
             </button>

@@ -12,28 +12,8 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-let app;
-
-try {
-  app = firebase.initializeApp(firebaseConfig);
-  console.log("Firebase initialized successfully");
-} catch (error) {
-  console.error("Firebase initialization error:", error);
-}
+const app = firebase.initializeApp(firebaseConfig);
 
 export const auth = app ? app.auth() : null;
 export const firestore = app ? app.firestore() : null;
 
-if (auth) {
-  console.log("Firebase Auth initialized successfully");
-} else {
-  console.error("Firebase Auth initialization failed");
-}
-
-if (firestore) {
-  console.log("Firestore initialized successfully");
-} else {
-  console.error("Firestore initialization failed");
-}
-
-export default app;

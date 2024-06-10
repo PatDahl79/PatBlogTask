@@ -96,7 +96,7 @@ function App() {
               element={
                 <CreatePost
                   onAddBlog={(newBlog) => {
-                    setBlogPosts([...blogPosts, { id: blogPosts.length + 1, ...newBlog }]);
+                  setBlogPosts([...blogPosts, { id: blogPosts.length + 1, ...newBlog }]);
                   }}
                 />
               }

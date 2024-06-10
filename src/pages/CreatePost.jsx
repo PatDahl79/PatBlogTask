@@ -21,6 +21,13 @@ const CreatePost = ({ onAddBlog }) => {
     setCategory("");
   };
 
+  const addBlog = (post) => {
+    const updatedPosts = [...blogPosts, post];
+    setBlogPosts(updatedPosts);
+    // Store updated posts in local storage
+    localStorage.setItem("blogPosts", JSON.stringify(updatedPosts));
+  };
+
   return (
     <Layout>
       <div className="p-5 container mx-auto max-w-5xl py-6 shadow-[inset_0_0_4px_rgba(0,0,0,0.6)] placeholder-black w-full rounded-md p-1">
