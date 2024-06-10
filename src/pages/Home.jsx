@@ -1,13 +1,14 @@
 import React from 'react'
 import HeroSection from '../componenets/HeroSection'
-import AllBlogsSection from './AllBlogsSection'
 import Layout from '../componenets/Layout'
+import AllBlogs from './AllBlogsSection'
+
 
 const Home = () => {
   return (
     <Layout>
         <HeroSection/>
-        <AllBlogsSection/>
+        <AllBlogs/>
     </Layout>
   )
 }

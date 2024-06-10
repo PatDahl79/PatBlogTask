@@ -5,15 +5,14 @@ import SignUpForm from "./componenets/SignUpForm";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import { UserContext } from "./componenets/UserContext";
 import { auth } from "./firebase";
-import Data from "./Data.json";
+import blogData from "./Data.json";
 import CreatePost from "./pages/CreatePost";
 import Home from "./pages/Home";
 import AllBlogs from "./pages/AllBlogs";
-import AllBlogsSection from "./pages/AllBlogsSection";
 
 function App() {
   const [blogPosts, setBlogPosts] = useState(
-    JSON.parse(localStorage.getItem("blogPosts")) || Data
+    JSON.parse(localStorage.getItem("blogPosts")) || blogData
   );
   const [user, setUser] = useState(null);
   const [showSignUp, setShowSignUp] = useState(false);
@@ -42,6 +41,12 @@ function App() {
     );
   };
 
+  const addBlog = async (newBlog) => {
+    const docRef = await firestore.collection("blogPosts").add(newBlog);
+    const blogWithId = { id: docRef.id, ...newBlog };
+    setBlogPosts((prevPosts) => [...prevPosts, blogWithId]);
+  };
+
   const editBlog = (postId, newText) => {
     setBlogPosts((prevPosts) =>
       prevPosts.map((post) =>
@@ -65,49 +70,42 @@ function App() {
         {user ? (
           <Routes>
           <Route
-            path="/"
-            element={
-              <Home
-                blogPosts={blogPosts}
-                removeBlog={removeBlog}
-                addComment={addComment}
-                editBlog={editBlog} 
-              />
-            }
-          />
-          <Route
-            path="/allblogs"
-            element={
-              <AllBlogs
-                blogPosts={blogPosts}
-                removeBlog={removeBlog}
-                addComment={addComment}
-                editBlog={editBlog} 
-              />
-            }
-          />
-          <Route
-            path="/allblogssection"
-            element={
-              <AllBlogsSection
-                blogPosts={blogPosts}
-                removeBlog={removeBlog}
-                addComment={addComment}
-                editBlog={editBlog} 
-              />
-            }
-          />
-          <Route
-            path="/createpost"
-            element={
-              <CreatePost
-                onAddBlog={(newBlog) => {
-                  setBlogPosts([...blogPosts, { id: blogPosts.length + 1, ...newBlog }]);
-                }}
-              />
-            }
-          />
-        </Routes>
+              path="/"
+              element={
+                <Home
+                  blogPosts={blogPosts}
+                  removeBlog={removeBlog}
+                  addComment={addComment}
+                  editBlog={editBlog} // Pass editBlog function as prop
+                />
+              }
+            />
+            <Route
+              path="/allblogs"
+              element={
+                <AllBlogs
+                  blogPosts={blogPosts}
+                  removeBlog={removeBlog}
+                  addComment={addComment}
+                  editBlog={editBlog} // Pass editBlog function as prop
+                />
+              }
+            />
+            <Route
+              path="/createpost"
+              element={
+                <CreatePost
+                  onAddBlog={(newBlog) => {
+                    setBlogPosts([...blogPosts, { id: blogPosts.length + 1, ...newBlog }]);
+                  }}
+                />
+              }
+            />
+            <Route
+              path="/createpost"
+              element={<CreatePost onAddBlog={addBlog} />}
+            />
+          </Routes>
         ) : (
           <div>
             <LoginForm toggleSignUp={toggleSignUp} />

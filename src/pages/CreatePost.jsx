@@ -6,7 +6,6 @@ const CreatePost = ({ onAddBlog }) => {
   const [title, setTitle] = useState("");
   const [blogText, setBlogText] = useState("");
   const [category, setCategory] = useState("");
-  const [thumbnail, setThumbnail] = useState(null);
   const { userName } = useContext(UserContext);
 
   const handleSubmit = (e) => {
@@ -15,12 +14,11 @@ const CreatePost = ({ onAddBlog }) => {
       alert("Please enter title, blog text, and select a category");
       return;
     }
-    const newBlog = {  id: blogPosts.length + 1, title, thumbnail, blogText, author: userName, category, timestamp: new Date().toISOString(),};
+    const newBlog = { title, blogText, author: userName, category, timestamp: new Date() };
     onAddBlog(newBlog);
     setTitle("");
     setBlogText("");
     setCategory("");
-    setThumbnail(null);
   };
 
   return (
@@ -37,23 +35,6 @@ const CreatePost = ({ onAddBlog }) => {
               onChange={(e) => setTitle(e.target.value)}
             />
           </div>
-
-          <div className="mb-2 font-semibold">
-            {thumbnail && (
-              <img
-                className="w-full rounded-md mb-3"
-                src={URL.createObjectURL(thumbnail)}
-                alt="thumbnail"
-              />
-            )}
-            <label>Thumbnail:</label>
-            <input
-              type="file"
-              className="shadow-[inset_0_0_4px_rgba(0,0,0,0.6)] placeholder-black w-full rounded-md p-1"
-              onChange={(e) => setThumbnail(e.target.files[0])}
-            />
-          </div>
-
 
           <div className="form-input mb-2 font-semibold">
             <label>Blog Text:</label>

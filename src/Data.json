@@ -12,6 +12,20 @@
       "author": "Susan Smitt",
       "title": "Adult ADHD",
       "category": "Adult ADHD"
+    },
+    {
+      "id": 3,
+      "blogText": "This is a blogg posted by a different user, You are not able to edit or delete this blogg",
+      "author": "Pia Dahl",
+      "title": "Adult ADHD",
+      "category": "General"
+    },
+    {
+      "id": 4,
+      "blogText": "This is a blogg posted by a different user, You are not able to edit or delete this blogg",
+      "author": "Natti Korn",
+      "title": "Adult ADHD",
+      "category": "General"
     }
   ]
   

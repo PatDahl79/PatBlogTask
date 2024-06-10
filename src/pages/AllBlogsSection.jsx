@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { UserContext } from "../componenets/UserContext";
 import { MdDeleteOutline, MdEdit } from "react-icons/md";
-import Layout from "../componenets/Layout";
 
 const AllBlogs = () => {
   const { userName } = useContext(UserContext);
@@ -9,7 +8,7 @@ const AllBlogs = () => {
   const [editedText, setEditedText] = useState("");
   const [comments, setComments] = useState({});
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [sortBy, setSortBy] = useState("latest");
+  const [sortBy, setSortBy] = useState("newest");
   const [filteredPosts, setFilteredPosts] = useState([]);
   const [blogPosts, setBlogPosts] = useState([]);
 
@@ -27,10 +26,10 @@ const AllBlogs = () => {
       filtered = filtered.filter((post) => post.category === selectedCategory);
     }
     filtered = filtered.sort((a, b) => {
-      if (sortBy === "latest") {
-        return new Date(b.timestamp) - new Date(a.timestamp);
+      if (sortBy === "newest") {
+        return b.id - a.id;
       } else {
-        return new Date(a.timestamp) - new Date(b.timestamp);
+        return a.id - b.id;
       }
     });
 
@@ -40,12 +39,14 @@ const AllBlogs = () => {
   const addBlog = (post) => {
     const updatedPosts = [...blogPosts, post];
     setBlogPosts(updatedPosts);
+    // Store updated posts in local storage
     localStorage.setItem("blogPosts", JSON.stringify(updatedPosts));
   };
 
   const removeBlog = (postId) => {
     const updatedPosts = blogPosts.filter((post) => post.id !== postId);
     setBlogPosts(updatedPosts);
+    // Update local storage
     localStorage.setItem("blogPosts", JSON.stringify(updatedPosts));
   };
 
@@ -53,8 +54,8 @@ const AllBlogs = () => {
     const updatedPosts = blogPosts.map((post) =>
       post.id === postId ? { ...post, blogText: newText } : post
     );
-    //UPDATE LOCAL STORAGE
     setBlogPosts(updatedPosts);
+    // Update local storage
     localStorage.setItem("blogPosts", JSON.stringify(updatedPosts));
   };
 
@@ -92,8 +93,8 @@ const AllBlogs = () => {
           ? { ...post, comments: [...(post.comments || []), newComment] }
           : post
       );
-      //UPDATE LOCAL STORAGE
       setBlogPosts(updatedPosts);
+      // Update local storage
       localStorage.setItem("blogPosts", JSON.stringify(updatedPosts));
       setComments((prevComments) => ({
         ...prevComments,
@@ -103,61 +104,54 @@ const AllBlogs = () => {
   };
 
   return (
-    <div className="mx-auto max-w-7xl">
-        <div className="flex flex-wrap justify-center px-5 py-5 gap-4">
-          <button
-            className={`submit-button ${sortBy === "latest" ? "active" : ""}`}
-            onClick={() => setSortBy("latest")}
-          >
-            Latest
-          </button>
-          <button
+      <div className="heroContent">
+        <div className="mx-auto max-w-7xl">
+          <div className="flex flex-wrap justify-center px-5 py-5 gap-4">
+            <button
             className={`submit-button ${ sortBy === "oldest" ? "active" : ""}`}
-            onClick={() => setSortBy("oldest")}
-          >
-            Oldest
-          </button>
-        </div>
-
-        <div className="flex flex-wrap justify-center gap-4">
-            <button
-              className={`submit-button ${ selectedCategory === "General" ? "active" : ""
-              }`}
-              onClick={() => setSelectedCategory("General")}
+              onClick={() => setSortBy("newest")}
             >
-              General
+              Latest
             </button>
             <button
-              className={`submit-button ${ selectedCategory === "Adult ADHD" ? "active" : ""
-              }`}
-              onClick={() => setSelectedCategory("Adult ADHD")}
+              className={`submit-button ${ sortBy === "oldest" ? "active" : ""}`}
+              onClick={() => setSortBy("oldest")}
             >
-              Adult ADHD
+              Oldest
             </button>
-            <button
-              className={`submit-button ${ selectedCategory === "Kids ADHD" ? "active" : ""
-              }`}
-              onClick={() => setSelectedCategory("Kids ADHD")}
-            >
-              Kids ADHD
-            </button>
-            <button
-              className={`submit-button ${!selectedCategory ? "active" : ""}`}
-              onClick={() => setSelectedCategory(null)}
-            >
-              All Post
-            </button>
-        </div>
+          </div>
+          <div className="flex flex-wrap justify-center gap-4">
+              <button
+                className={`submit-button ${ selectedCategory === "General" ? "active" : ""
+                }`}
+                onClick={() => setSelectedCategory("General")}
+              >
+                General
+              </button>
+              <button
+                className={`submit-button ${ selectedCategory === "Adult ADHD" ? "active" : ""
+                }`}
+                onClick={() => setSelectedCategory("Adult ADHD")}
+              >
+                Adult ADHD
+              </button>
+              <button
+                className={`submit-button ${ selectedCategory === "Kids ADHD" ? "active" : ""
+                }`}
+                onClick={() => setSelectedCategory("Kids ADHD")}
+              >
+                Kids ADHD
+              </button>
+              <button
+                className={`submit-button ${!selectedCategory ? "active" : ""}`}
+                onClick={() => setSelectedCategory(null)}
+              >
+                All Post
+              </button>
+          </div>
 
           {filteredPosts.map((post) => (
-            <div className="container mx-auto py-4 h-full shadow-lg hover:-translate-y-1 hover:shadow-gray-400" key={post.id}>
-              {post.thumbnail && (
-                <img
-                  className="w-full rounded-md mb-3"
-                  src={URL.createObjectURL(post.thumbnail)}
-                  alt="thumbnail"
-                />
-              )}
+            <div className="blogPost mt-5 mb-5 py-4 shadow-lg hover:-translate-y-1 hover:shadow-gray-400" key={post.id}>
               <h2>
                 {post.title}
                 {post.author === userName && (
@@ -171,7 +165,7 @@ const AllBlogs = () => {
                     {editablePostId === post.id ? (
                       <MdEdit onClick={() => handleSave(post.id)} className="edit-icon"/>
                     ) : (
-                      <MdEdit onClick={() => handleEdit(post.id, post.blogText)} className="edit-icon"/>
+                      <MdEdit onClick={() => handleEdit(post.id, post.blogText)}className="edit-icon" />
                     )}
                   </>
                 )}
@@ -197,7 +191,7 @@ const AllBlogs = () => {
                   onClick={() => handleCommentSubmit(post.id)}
                   disabled={!comments[post.id]}
                 >
-                  Send
+                  Submit
                 </button>
               </div>
               <div className="commentSection" data-postid={post.id}>
@@ -206,12 +200,13 @@ const AllBlogs = () => {
                   <div className="commentWrapper" key={index}>
                     <h2>{comment.userName === userName ? "You" : comment.userName}</h2>
                     <p>{comment.text}</p>
+                    <p>Posted on: {new Date(comment.timestamp).toLocaleDateString()}</p>
                   </div>
                 ))}
               </div>
             </div>
           ))}
-
+        </div>
       </div>
   );
 };

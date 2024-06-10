@@ -22,11 +22,18 @@ try {
 }
 
 export const auth = app ? app.auth() : null;
+export const firestore = app ? app.firestore() : null;
 
 if (auth) {
   console.log("Firebase Auth initialized successfully");
 } else {
   console.error("Firebase Auth initialization failed");
+}
+
+if (firestore) {
+  console.log("Firestore initialized successfully");
+} else {
+  console.error("Firestore initialization failed");
 }
 
 export default app;
